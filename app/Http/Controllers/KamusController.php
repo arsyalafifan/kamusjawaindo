@@ -75,6 +75,98 @@ class KamusController extends BaseController
 
     }
 
+    public function terjemahan_jawa(Request $request) {
+        $data = [];
+        $count = 0;
+
+        $page = $request->get('start', 0);  
+        $perpage = $request->get('length',10);
+
+        try {
+            $kamus =  DB::table('kamusjawaindo')
+                        ->select('kamusjawaindo.jawa as terjemahan')
+                        ->where('kamusjawaindo.dlt', DB::raw("'0'"))
+                        ->where(DB::raw('LOWER(kamusjawaindo.indonesia)'), strtolower($request->word_input));
+
+            $data = $kamus->first();
+            
+            if ($data == null) {
+                $kamus =  DB::table('kamusjawaindo')
+                        ->select('kamusjawaindo.indonesia as indonesia', 'kamusjawaindo.jawa as jawa')
+                        ->where('kamusjawaindo.dlt', DB::raw("'0'"))
+                        ->where(DB::raw('LOWER(kamusjawaindo.indonesia)'), 'ilike', '%'.strtolower($request->word_input).'%');
+
+                $data = $kamus->skip($page)->take($perpage)->get();
+
+                return $this->sendResponse([
+                    'isExist' => false,
+                    'data' => $data,
+                    'count' => $count,
+                ], 'Data kamus retrieved succesfully.');
+                exit;
+            }
+            // dd($data);
+            $count = $kamus->count();
+                        
+            return $this->sendResponse([
+                'isExist' => true,
+                'data' => $data,
+                'count' => $count,
+            ], 'Data kamus retrieved succesfully.');  
+        } catch (QueryException $e) {
+            return $this->sendError('SQL Error', $this->getQueryError($e));
+        }
+        catch (Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
+    public function terjemahan_indonesia(Request $request) {
+        $data = [];
+        $count = 0;
+
+        $page = $request->get('start', 0);  
+        $perpage = $request->get('length',10);
+
+        try {
+            $kamus =  DB::table('kamusjawaindo')
+                        ->select('kamusjawaindo.indonesia as terjemahan')
+                        ->where('kamusjawaindo.dlt', DB::raw("'0'"))
+                        ->where(DB::raw('LOWER(kamusjawaindo.jawa)'), strtolower($request->word_input));
+
+            $data = $kamus->first();
+
+            if($data == null) {
+                $kamus =  DB::table('kamusjawaindo')
+                        ->select('kamusjawaindo.indonesia as indonesia', 'kamusjawaindo.jawa as jawa')
+                        ->where('kamusjawaindo.dlt', DB::raw("'0'"))
+                        ->where(DB::raw('LOWER(kamusjawaindo.jawa)'), 'ilike', '%'.strtolower($request->word_input.'%'));
+
+                $data = $kamus->skip($page)->take($perpage)->get();
+
+                return $this->sendResponse([
+                    'isExist' => false,
+                    'data' => $data,
+                    'count' => $count,
+                ], 'Data kamus retrieved succesfully.');
+                exit;
+            }
+            
+            $count = $kamus->count();
+
+            return $this->sendResponse([
+                'isExist' => true,
+                'data' => $data,
+                'count' => $count,
+            ], 'Data kamus retrieved succesfully.');  
+        } catch (QueryException $e) {
+            return $this->sendError('SQL Error', $this->getQueryError($e));
+        }
+        catch (Exception $e) {
+            return $this->sendError('Error', $e->getMessage());
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
      *

@@ -18,4 +18,6 @@ Route::get('/', function () {
     return view('layouts.master');
 });
 
+Route::get('kamus/jawa', [KamusController::class, 'terjemahan_jawa'])->name('kamus.jawa');
+Route::get('kamus/indonesia', [KamusController::class, 'terjemahan_indonesia'])->name('kamus.indonesia');
 Route::resource('kamus', KamusController::class);
