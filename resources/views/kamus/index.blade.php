@@ -46,12 +46,38 @@ use App\Helpers\Get_field;
             <form class="form-material">
                 <div class="form-group row">
                     <div class="col-md-12">
+                        <div class="col-md-2">
+                            <label for="cari_bahasa" class="control-label">Cari Bahasa:</label>
+                        </div>
+                        <div class="col-md-10">
+                            <select id="cari_bahasa" class="col-md-12 custom-select form-control" name='cari_bahasa'>
+                                <option value="1">Indonesia - Jawa</option>
+                                <option value="2">Jawa - Indonesia</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="list_abjad" class="control-label">List Abjad:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <select id="list_abjad" class="col-md-12 custom-select form-control" name='list_abjad'>
+                                <option value="">-- Semua Abjad --</option>
+                                @foreach (enum::listAbjad() as $id)
+                                <option value="{{ $id }}">{{ enum::listAbjad('id')[$loop->index] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
                         <div class="row">
-                            <div class="col-md-3">
-                                <label for="search" class="col-md-12 col-form-label text-md-left">{{ __('Filter') }}</label>
+                            <div class="col-md-4">
+                                <label for="search" class="col-md-12 col-form-label text-md-left">{{ __('Cari') }}</label>
                             </div>
-                            <div class="col-md-9">
-                                <input id="search" type="text" class="col-md-12 form-control" name="search" value="{{ old('search') }}" maxlength="100" autocomplete="search" placeholder="-- Filter --">
+                            <div class="col-md-8">
+                                <input id="search" type="text" class="col-md-12 form-control" name="search" value="{{ old('search') }}" maxlength="100" autocomplete="search" placeholder="-- Cari --">
                             </div>
                         </div>
                     </div>
@@ -76,6 +102,7 @@ use App\Helpers\Get_field;
 </div>
 
 <script>
+    $('.custom-select').select2();
     var v_modedetail = "";
     function setLanguageMode() {
         // v_modedetail = mode;
@@ -184,9 +211,10 @@ use App\Helpers\Get_field;
                         // }
                         $('#word_output').val(data.data.terjemahan);
                 }else{
-                    swal.fire('Kata Tidak Ditemukan', 'Entri yang anda masukkan tidak ada', 'error')
+                    // swal.fire('Kata Tidak Ditemukan', 'Entri yang anda masukkan tidak ada', 'error')
                     $('#word_output').val(data.data.terjemahan);
-                    var div = $('<div><h3 class="box-title">Terjemahan lainnya</h3></div>'); // Membuat elemen <div>
+                    var div = $('<div></div>'); // Membuat elemen <div>
+                    var div = $(`<div><h1 class="box-title text-danger"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> Kata yang anda cari tidak ada! <i class="fa fa-exclamation-circle" aria-hidden="true"></i></h1><h3 class="box-title">Terjemahan lainnya yang mungkin anda maksud</h3></div>`); // Membuat elemen <div>
                     data.data.forEach(function(item) {
                         // div.append('<li>Indonesia: ' + item.indonesia + '</li>'); // Menambahkan <li> untuk Indonesia
                         // div.append('<li>Jawa: ' + item.jawa + '</li>'); // Menambahkan <li> untuk Jawa
@@ -268,8 +296,8 @@ use App\Helpers\Get_field;
                         // "jenjang": $("#jenjang").val().toLowerCase(),
                         // "sekolahid": $("#sekolahid").val().toLowerCase(),
                         // "jenis": $("#jenis").val().toLowerCase(),
-                        // "filter_status": $("#filter_status").val().toLowerCase(),
-                        // "filter_jenispeg": $("#filter_jenispeg").val().toLowerCase(),
+                        "cari_bahasa": $("#cari_bahasa").val().toLowerCase(),
+                        "list_abjad": $("#list_abjad").val().toLowerCase(),
                         "search": $("#search").val().toLowerCase()
                     });
                 }
@@ -325,6 +353,12 @@ use App\Helpers\Get_field;
                 kamustable.draw();
                 //  $('#pegawai-table').hide();
             }
+        });
+        $('#list_abjad').change( function() { 
+            kamustable.draw();
+        });
+        $('#cari_bahasa').change( function() { 
+            kamustable.draw();
         });
 </script>
 
