@@ -32,6 +32,8 @@ class KamusController extends BaseController
         if($request->ajax())
         {
             $search = $request->search;
+            $list_abjad = $request->list_abjad;
+            $cari_bahasa = $request->cari_bahasa;
 
             $data = [];
             $count = 0;
@@ -42,10 +44,21 @@ class KamusController extends BaseController
                 $kamus =  DB::table('kamusjawaindo')
                             ->select('kamusjawaindo.*')
                             ->where('kamusjawaindo.dlt', DB::raw("'0'"))
-                            ->where(function($query) use ($search) {
+                            ->where(function($query) use ($search, $list_abjad, $cari_bahasa) {
                                 if (!is_null($search) && $search != '') {
-                                    $query->where(DB::raw('kamusjawaindo.indonesia'), 'ilike', '%'.$search.'%');
-                                    $query->orWhere(DB::raw('kamusjawaindo.jawa'), 'ilike', '%'.$search.'%');
+                                    if ($cari_bahasa == '1') {
+                                        $query->where(DB::raw('kamusjawaindo.indonesia'), 'ilike', '%'.$search.'%');
+                                    }else {
+
+                                        $query->where(DB::raw('kamusjawaindo.jawa'), 'ilike', '%'.$search.'%');
+                                    }
+                                }
+                                if (!is_null($list_abjad) && $list_abjad != '') {
+                                    if ($cari_bahasa == '1') {
+                                        $query->where(DB::raw('kamusjawaindo.indonesia'), 'ilike', $list_abjad.'%');
+                                    }else {
+                                        $query->where(DB::raw('kamusjawaindo.jawa'), 'ilike', $list_abjad.'%');
+                                    }
                                 }
                             })
                             ->orderBy('kamusjawaindo.indonesia');
