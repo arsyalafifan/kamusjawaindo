@@ -243,6 +243,6 @@ class KamusController extends BaseController
      */
     public function destroy($id)
     {
-        //
+        // apa gitu
     }
 }
